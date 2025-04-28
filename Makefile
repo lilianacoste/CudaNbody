@@ -1,17 +1,27 @@
-CXXFLAGS=-O3
+CXX = nvcc
+CXXFLAGS = -O3
 
-nbody: nbody.cpp
-	g++ -O3 nbody.cpp -o nbody
+TARGET = nbody_cuda
+SRC = nbody.cu
 
-solar.out: nbody
+all: $(TARGET)
+
+$(TARGET): $(SRC)
+	$(CXX) $(CXXFLAGS) -o $(TARGET) $(SRC)
+
+solar.out: $(TARGET)
 	date
-	./nbody planet 200 5000000 10000 > solar.out # maybe a minutes
+	./$(TARGET) planet 200 5000000 10000 > solar.out
 	date
 
 solar.pdf: solar.out
-	python3 plot.py solar.out solar.pdf 1000 
+	python3 plot.py solar.out solar.pdf 1000
 
-random.out: nbody
+random.out: $(TARGET)
 	date
-	./nbody 1000 1 10000 100 > random.out # maybe 5 minutes
+	./$(TARGET) 1000 1 10000 100 > random.out
 	date
+
+clean:
+	rm -f $(TARGET) solar.out random.out solar.pdf
+
